@@ -1,16 +1,19 @@
-import { useRef } from "react";
+import { useRef} from "react";
 import api from '../services/api.js'
+import { useNavigate } from "react-router-dom";
 
 
 function Login() {
 
     const email = useRef()
     const password = useRef()
+    const navigate = useNavigate()
 
     async function handleSubmit(e) {
         e.preventDefault()
 
         try{
+
             if(email.current.value === '' || password.current.value === ''){
                 alert('Preencha todos os campos')
                 return
@@ -24,9 +27,11 @@ function Login() {
 
             alert(response.data.message)
 
+            navigate('/todolist')
+
         } catch (e) {
             console.error(e)
-            alert('Falha ao fazer login, verifique seus dados')
+            alert('Falha ao fazer login, verifique seu email ou senha')
         }
 
        
@@ -41,7 +46,9 @@ function Login() {
                 <input type="email" placeholder="Email" ref={email}/>
                 <input type="password" placeholder="Senha"  ref={password}/>
                 <button>Login</button>
+                
             </form>
+
         </div>
 
     )
