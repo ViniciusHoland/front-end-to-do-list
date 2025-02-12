@@ -1,6 +1,6 @@
 import { useRef} from "react";
 import api from '../services/api.js'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 
 function Login() {
@@ -25,6 +25,8 @@ function Login() {
                 password : password.current.value,
             })
 
+            localStorage.setItem('token', response.data.token)
+
             alert(response.data.message)
 
             navigate('/todolist')
@@ -46,9 +48,8 @@ function Login() {
                 <input type="email" placeholder="Email" ref={email}/>
                 <input type="password" placeholder="Senha"  ref={password}/>
                 <button>Login</button>
-                
             </form>
-
+            <Link to={'/register'}> Não tem uma conta? Cadastre-se</Link>
         </div>
 
     )
