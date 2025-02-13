@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import { useRef } from "react";
 import api from '../services/api'
 
@@ -7,6 +7,8 @@ function Register() {
     const name = useRef();
     const email = useRef();
     const password = useRef();
+    const navigate = useNavigate();
+
 
 
     async function handleSubmit(event){
@@ -26,10 +28,10 @@ function Register() {
 
             console.log(response.data.message)
 
+            navigate('/')
 
 
         }catch(e){
-            console.log(e.response)
             if(e.status === 400){
                 alert(e.response.data.message)
             } else {
@@ -48,9 +50,9 @@ function Register() {
                 <input type="text" placeholder="Nome" ref={name}/>
                 <input type="email" placeholder="Email" ref={email}/>
                 <input type="password" placeholder="Senha"  ref={password}/>
-                <button>Login</button>
+                <button>Cadastrar</button>
             </form>
-            <Link to={'/login'}> Já tem uma conta? Log In</Link>
+            <Link to={'/'}> Já tem uma conta? Log In</Link>
         </div>
 
         
