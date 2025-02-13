@@ -18,6 +18,7 @@ function ToDoList() {
       });
    
       setAllList(response.data);
+
     } catch (e) {
       console.error(e);
       if (e.response.status == 404) {
@@ -28,6 +29,10 @@ function ToDoList() {
         return; // evita que a função seja chamada novamente se houver um erro
       }
     }
+  }
+
+  function showAllList(){
+
   }
 
   const handleSubmit = async (e) => {
@@ -50,7 +55,10 @@ function ToDoList() {
             }
         )
 
-        setAllList(response.data.newToDoList)
+        dateRef.current.value = ''
+        titleRef.current.value = ''
+        descriptionRef.current.value = ''
+
         getAllList()
 
     }catch (err) {
@@ -59,6 +67,29 @@ function ToDoList() {
         return;
     }
       
+  }
+
+  const deleteList = async (idList) => {
+
+    try{
+
+        const response = await api.delete(`/todolist/${idList}`, 
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }            
+        )
+
+        alert(response.data.message)
+        getAllList()
+
+    }catch(err) {
+        console.error(err);
+        alert("Falha ao deletar a tarefa");
+        return;
+    }
+
   }
 
 
@@ -102,8 +133,8 @@ function ToDoList() {
               <h1>{list.title}</h1>
               <p>{list.description}</p>
               <p>{new Date(list.date).toLocaleDateString("pt-BR")}</p>
-              <button>Editar</button>
-              <button>Deletar</button>
+              <button >Editar</button>
+              <button onClick={() => deleteList(list.id)}>Deletar</button>
             </li>
           ))}
         </ul>
