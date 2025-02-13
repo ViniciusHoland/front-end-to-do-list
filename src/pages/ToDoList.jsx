@@ -1,67 +1,115 @@
-import { useState, useEffect} from "react";
-import api from '../services/api'
+import { useState, useEffect, useRef} from "react";
+import api from "../services/api";
 
-function ToDoList(){
+function ToDoList() {
+  const [allList, setAllList] = useState([]);
+  const token = localStorage.getItem("token");
+  const titleRef = useRef()
+  const dateRef = useRef()
+  const descriptionRef= useRef()
 
-    const [allList, setAllList] = useState([])
+  async function getAllList() {
+    try {
 
-
-    async function getAllList(){
-
-        try{
-            const token = localStorage.getItem('token')
-
-            const response = await api.get('/todolist', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            console.log(response.data)
-            setAllList(response.data)
-
-
-        }catch (e) {
-            console.error(e)
-            if(e.response.status == 404){
-                alert('Sem nenhuma tarefa cadastrada')
-                return
-            } else {
-                alert('Falha ao buscar as tarefas')
-                return  // evita que a função seja chamada novamente se houver um erro
-            }
-            
-        }
-
+      const response = await api.get("/todolist", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+   
+      setAllList(response.data);
+    } catch (e) {
+      console.error(e);
+      if (e.response.status == 404) {
+        alert("Sem nenhuma tarefa cadastrada");
+        return;
+      } else {
+        alert("Falha ao buscar as tarefas");
+        return; // evita que a função seja chamada novamente se houver um erro
+      }
     }
+  }
 
-    useEffect(() =>{
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
 
+        const title = titleRef.current.value
+        const description = descriptionRef.current.value
+        const date = dateRef.current.value
+
+        const response = await api.post('/todolist', {
+                title,
+                description,
+                date
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }
+        )
+
+        setAllList(response.data.newToDoList)
         getAllList()
 
-    },[])
+    }catch (err) {
+        console.error(err);
+        alert("Falha ao adicionar a tarefa");
+        return;
+    }
+      
+  }
 
 
-    return (
 
-        
+  useEffect(() => {
+    getAllList();
+  }, []);
+
+  return (
+    <div>
+
         <div>
-            <h1>Minhas Tarefas</h1>
-            <ul>
-                {allList.map( (list) => (
-                    <li key={list.id}>
-                        <h1>{list.title}</h1>
-                        <p>{list.description}</p>
-                        <p>{new Date(list.date).toLocaleDateString('pt-BR')}</p>
-                    </li>
-                ))}
-            </ul>
+            <form action="" onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Título da tarefa"
+                  ref={titleRef}
+                  required
+                />
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Descrição da tarefa"
+                  ref={descriptionRef}
+                  required
+                />
+                <input type="date" name="date" ref={dateRef} required />
+                <button>Adicionar Tarefa</button>
+  
+            </form>
         </div>
-        
-
-    )
 
 
 
+      <div>
+        <h1>Minhas Tarefas</h1>
+        <ul>
+          {allList.map((list) => (
+            <li key={list.id}>
+              <h1>{list.title}</h1>
+              <p>{list.description}</p>
+              <p>{new Date(list.date).toLocaleDateString("pt-BR")}</p>
+              <button>Editar</button>
+              <button>Deletar</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }
 
 export default ToDoList;
